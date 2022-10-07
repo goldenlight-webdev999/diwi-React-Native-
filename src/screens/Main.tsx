@@ -17,7 +17,7 @@ const Main: FC=(props) => {
   return (
     <SafeAreaView >
       <View style={{flex:1}}>
-        <StatusBar backgroundColor='white'/>
+        {/* <StatusBar backgroundColor='white'/> */}
         <Text style={styles.textstyle}>Main</Text>
       </View>
     </SafeAreaView>
@@ -28,6 +28,7 @@ const styles=StyleSheet.create({
   textstyle:{
     textAlign:'center',
     fontSize:18,
+    backgroundColor:'red'
   }
 })
 
