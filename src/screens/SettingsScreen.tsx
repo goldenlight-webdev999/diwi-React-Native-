@@ -5,15 +5,26 @@ import {
   Text,
   View
 } from 'react-native';
+import Header from '../components/Header';
 
 
-const ScreenScreen
-: FC=(props) => {
+const ScreenScreen: FC=(props) => {
   return (
-    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
+    <SafeAreaView>
+      <Header title={"Account"}></Header>
+      <View style={styles.container}>
+        <Text>Account</Text>
+      </View>      
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+});
 
 export default ScreenScreen;

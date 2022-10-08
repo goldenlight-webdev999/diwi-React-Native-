@@ -9,10 +9,20 @@ import {
 
 const CaptureScreen: FC=(props) => {
   return (
-    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Capture</Text>
+    <SafeAreaView >      
+      <View style={styles.container}>
+        <Text>Capture here!</Text>
+      </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+});
 
 export default CaptureScreen;
