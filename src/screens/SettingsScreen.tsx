@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  StatusBar,
   View
 } from 'react-native';
 
@@ -11,9 +10,9 @@ import {
 const ScreenScreen
 : FC=(props) => {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Settings!</Text>
-    </View>
+    </SafeAreaView>
   );
 };
 

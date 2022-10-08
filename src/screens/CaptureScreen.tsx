@@ -3,27 +3,16 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  StatusBar,
   View
 } from 'react-native';
 
 
 const CaptureScreen: FC=(props) => {
   return (
-    <SafeAreaView >
-      <View style={{flex:1}}>
-        <StatusBar backgroundColor='white'/>
-        <Text style={styles.textstyle}>Capture</Text>
-      </View>
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Capture</Text>
     </SafeAreaView>
   );
 };
- 
-const styles=StyleSheet.create({
-  textstyle:{
-    textAlign:'center',
-    fontSize:18,
-  }
-})
 
 export default CaptureScreen;

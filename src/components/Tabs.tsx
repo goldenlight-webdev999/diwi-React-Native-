@@ -14,7 +14,9 @@ const Tab = createBottomTabNavigator();
 
 const Tabs: FC=(props) => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{ headerShown: false }}
+    >
       <Tab.Screen name="Capture" component={CaptureScreen} />
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
