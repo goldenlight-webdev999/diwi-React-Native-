@@ -9,17 +9,8 @@ import {
   FlatList
 } from 'react-native';
 import { searchPlaceholder } from '../services/constants';
- 
-interface HeaderType {
-  title: string,
-  hasSearch?: boolean,
-}
-
-interface FilterDataType {
-  id: string
-  title: string,
-  value: string,
-}
+import { dataToFilter } from '../services/mockup';
+import { FilterDataType, HeaderType } from '../services/models';
 
 const Header: FC<HeaderType>=(props) => {
   const { title, hasSearch } = props
@@ -28,19 +19,8 @@ const Header: FC<HeaderType>=(props) => {
   const [masterDataSource, setMasterDataSource] = useState(():FilterDataType[]=>[]);
 
   useEffect(() => {
-    const data: FilterDataType[] = [
-      {
-        id: "1",
-        title: "Apple",
-        value: "apple"
-      },
-      {
-        id: "2",
-        title: "Pear",
-        value: "pear"
-      },
-    ]
-    setMasterDataSource(data);
+    const data = dataToFilter
+    setMasterDataSource(data)
   }, []);
 
   const searchFilterFunction = (text: string) => {
