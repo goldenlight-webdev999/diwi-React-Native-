@@ -5,8 +5,10 @@ import {
   Text,
   View,
 } from 'react-native';
-import Main from './src/screens/Main';
+import Main from './src/screens/HomeScreen';
 import SplashScreen from 'react-native-splash-screen';
+import { NavigationContainer } from '@react-navigation/native';
+import Tabs from './src/components/Tabs';
 
 
 const App: FC=() => {
@@ -15,9 +17,9 @@ const App: FC=() => {
   }, []);
 
   return (
-    <SafeAreaView style={{backgroundColor:'green',flex:1}}>
-      <Main/>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Tabs />
+    </NavigationContainer>
   );
 };
 

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 
-const Capture: FC=(props) => {
+const CaptureScreen: FC=(props) => {
   return (
     <SafeAreaView >
       <View style={{flex:1}}>
@@ -26,4 +26,4 @@ const styles=StyleSheet.create({
   }
 })
 
-export default Capture;
+export default CaptureScreen;
