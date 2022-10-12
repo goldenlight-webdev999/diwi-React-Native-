@@ -6,7 +6,7 @@ import {
   View
 } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
+import HomeStackNav from '../components/HomeStackNav';
 import SettingsScreen from '../screens/SettingsScreen';
 import CaptureScreen from '../screens/CaptureScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,11 +16,11 @@ const Tab = createBottomTabNavigator();
 const Tabs: FC=(props) => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="HomeStackNav"
       screenOptions={{ headerShown: false, tabBarActiveTintColor: '#0a0a23', tabBarShowLabel: true, }}
     > 
       <Tab.Screen
-        name="Capture"
+        name="CaptureStackNav"
         component={CaptureScreen}
         options={{
           tabBarLabel: 'Capture',
@@ -30,8 +30,8 @@ const Tabs: FC=(props) => {
         }}
       />
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="HomeStackNav"
+        component={HomeStackNav}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
@@ -40,7 +40,7 @@ const Tabs: FC=(props) => {
         }}
       />
       <Tab.Screen
-        name="Settings"
+        name="SettingsStackNav"
         component={SettingsScreen}
         options={{
           tabBarLabel: 'Settings',

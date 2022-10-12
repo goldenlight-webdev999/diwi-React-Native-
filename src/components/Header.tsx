@@ -6,76 +6,102 @@ import {
   Text,
   StatusBar,
   TextInput,
-  FlatList
+  FlatList,
+  TouchableOpacity,
+  Dimensions
 } from 'react-native';
-import { searchPlaceholder } from '../services/constants';
-import { dataToFilter } from '../services/mockup';
-import { FilterDataType, HeaderType } from '../services/models';
+import { initItemsData, initSearchResult, searchPlaceholder } from '../services/constants';
+import { itemsData } from '../services/mockup';
+import { ItemDataType, HeaderType, searchResultType } from '../services/models';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const screen = Dimensions.get('window')
 
 const Header: FC<HeaderType>=(props) => {
-  const { title, hasSearch } = props
+  
+  const { title, hasSearch, back, action, initSearchText, onSearch, onBack } = props
   const [search, setSearch] = useState('');
-  const [filteredDataSource, setFilteredDataSource] = useState(():FilterDataType[]=>[]);
-  const [masterDataSource, setMasterDataSource] = useState(():FilterDataType[]=>[]);
+
+  const [filteredDataSource, setFilteredDataSource] = useState(initSearchResult);
+  const [masterDataSource, setMasterDataSource] = useState(initItemsData);
 
   useEffect(() => {
-    const data = dataToFilter
+    const data = itemsData
     setMasterDataSource(data)
+    if (initSearchText) {
+      setSearch(initSearchText)
+    }
   }, []);
 
-  const searchFilterFunction = (text: string) => {
+  useEffect(() => {
+    //console.log(filteredDataSource)
+  }, [filteredDataSource]);
+
+  const searchFilterFunction = (searchText: string) => {
     // Check if searched text is not blank
-    if (text) {
+    if (searchText) {
       
-      const newData = masterDataSource.filter(function (item) {
-        
-        const itemData = item.title
-          ? item.title.toUpperCase()
-          : ''.toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
+      /**
+       * Search from friends
+       */
+      const friendData = masterDataSource.filter(function (item) {
+        const itemData = item.friend
+          ? item.friend.toUpperCase()
+          : '';
+        const searchKey = searchText.toUpperCase();
+        return itemData.indexOf(searchKey) > -1;
       });
+
+
+      /**
+       * Search from titles, locations, notes
+       */
+      const keyData = masterDataSource.filter(function (item) {
+        const titleData = item.title
+          ? item.title.toUpperCase()
+          : '';
+        const locationData = item.title
+          ? item.location.toUpperCase()
+          : '';
+        const noteData = item.title
+          ? item.note.toUpperCase()
+          : '';
+        const searchKey = searchText.toUpperCase();
+        return ( titleData.indexOf(searchKey) > -1 ) || ( locationData.indexOf(searchKey) > -1 ) || ( noteData.indexOf(searchKey) > -1 );
+      });
+
+      const newData = {
+        key: searchText,
+        friendData,
+        keyData
+      }
       setFilteredDataSource(newData);
-      setSearch(text);
+      setSearch(searchText);
+      onSearch(newData);
     } else {
-      
-      setFilteredDataSource(masterDataSource);
-      setSearch(text);
+      setFilteredDataSource(initSearchResult);
+      setSearch('');
+      onSearch(initSearchResult)
     }
-  };
-
-  const ItemView = ( item: FilterDataType ) => {
-    return (
-      // Flat List Item
-      <Text style={styles.itemStyle} onPress={() => getItem(item)}>
-        {item.id}
-        {'.'}
-        {item.title.toUpperCase()}
-      </Text>
-    );
-  };
-
-  const ItemSeparatorView = () => {
-    return (
-      // Flat List Item Separator
-      <View
-        style={{
-          height: 0.5,
-          width: '100%',
-          backgroundColor: '#C8C8C8',
-        }}
-      />
-    );
-  };
-
-  const getItem = (item: FilterDataType) => {
-    // Function for click on an item
-    //alert('Id : ' + item.id + ' Title : ' + item.title);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titleStyle}>{title}</Text>
+      <View style={styles.topStyle}>
+        {back && (
+          <TouchableOpacity style={styles.backStyle} onPress={onBack}>
+            <Text style={styles.backTextStyle}>Back</Text>
+          </TouchableOpacity>
+        )}
+        <Text style={styles.titleStyle}>{title}</Text>
+        {action?.type === 'Save' ? (
+          <Text style={styles.actionStyle}>{action?.label}</Text>
+        ) : (
+          <Icon name="dots-horizontal" color={'#fff'} size={20} />
+        )}
+        
+      </View>
+      
       {hasSearch && (
         <View style={{ width:'100%' }}>
           <TextInput
@@ -85,13 +111,7 @@ const Header: FC<HeaderType>=(props) => {
             underlineColorAndroid="transparent"
             placeholder={searchPlaceholder}
             placeholderTextColor={"#ccc"}
-          />
-          {/* <FlatList
-            data={filteredDataSource}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={ItemSeparatorView}
-            renderItem={ItemView}
-          /> */}
+          />          
         </View>
       )}
     </View>
@@ -106,12 +126,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
-  },
-  titleStyle: {
-    color: 'white',
-    paddingTop:20,
-    paddingBottom:10
-  },
+  },  
   itemStyle: {
     padding: 10,
   },
@@ -124,6 +139,31 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
     backgroundColor: '#b637ab',
     borderRadius: 20,
+  },
+  topStyle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingTop:20,
+    paddingBottom:10,
+  },
+  backStyle: {
+    width: 60,
+    color: 'white',
+    padding: 5,
+  },
+  backTextStyle: {
+    color: 'white',
+  },
+  actionStyle: {
+    width: 30,
+    color: 'white',
+  },
+  titleStyle: {
+    color: 'white',
+    width: screen.width - 120,
+    textAlign: 'center',
   },
 });
 

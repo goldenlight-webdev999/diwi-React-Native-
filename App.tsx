@@ -9,11 +9,14 @@ import Main from './src/screens/HomeScreen';
 import SplashScreen from 'react-native-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import Tabs from './src/components/Tabs';
+import Navigations from './src/components/HomeStackNav';
 
 
 const App: FC=() => {
   useEffect(() => {
-    SplashScreen.hide();
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 1500)
   }, []);
 
   return (
