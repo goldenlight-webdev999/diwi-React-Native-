@@ -1,33 +1,42 @@
 import React, { FC, useState, useEffect } from 'react';
 import {
-  SafeAreaView,
   View,
   StyleSheet,
   Text,
-  StatusBar,
   TextInput,
-  FlatList,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  StatusBar,
+  Platform
 } from 'react-native';
-import { initItemsData, initSearchResult, searchPlaceholder } from '../services/constants';
-import { itemsData } from '../services/mockup';
-import { ItemDataType, HeaderType, searchResultType } from '../services/models';
+import { initFriendsData, initItemsData, initSearchResult, searchPlaceholder } from '../services/constants';
+import { friendsData, itemsData } from '../services/mockup';
+import { ItemDataType, HeaderType, SearchResultType } from '../services/models';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const screen = Dimensions.get('window')
 
 const Header: FC<HeaderType>=(props) => {
   
-  const { title, hasSearch, back, action, initSearchText, onSearch, onBack } = props
+  const { title, hasSearch, back, action, initSearchText, onSearch, onBack, onMore, onSave } = props
   const [search, setSearch] = useState('');
 
   const [filteredDataSource, setFilteredDataSource] = useState(initSearchResult);
   const [masterDataSource, setMasterDataSource] = useState(initItemsData);
+  const [friendsDataSource, setFriendsDataSource] = useState(initFriendsData);
 
-  useEffect(() => {
+  const init = () => {
     const data = itemsData
     setMasterDataSource(data)
+
+    const friends = friendsData
+    setFriendsDataSource(friends)
+  }
+
+  useEffect(() => {
+
+    init()
+
     if (initSearchText) {
       setSearch(initSearchText)
     }
@@ -44,9 +53,9 @@ const Header: FC<HeaderType>=(props) => {
       /**
        * Search from friends
        */
-      const friendData = masterDataSource.filter(function (item) {
-        const itemData = item.friend
-          ? item.friend.toUpperCase()
+      const friendData = friendsDataSource.filter(function (item) {
+        const itemData = item.name
+          ? item.name.toUpperCase()
           : '';
         const searchKey = searchText.toUpperCase();
         return itemData.indexOf(searchKey) > -1;
@@ -87,17 +96,23 @@ const Header: FC<HeaderType>=(props) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor={'#b637ab'} />
       <View style={styles.topStyle}>
         {back && (
           <TouchableOpacity style={styles.backStyle} onPress={onBack}>
-            <Text style={styles.backTextStyle}>Back</Text>
+            <Icon name="chevron-left" color={'#fff'} size={20} />
           </TouchableOpacity>
         )}
         <Text style={styles.titleStyle}>{title}</Text>
-        {action?.type === 'Save' ? (
-          <Text style={styles.actionStyle}>{action?.label}</Text>
-        ) : (
-          <Icon name="dots-horizontal" color={'#fff'} size={20} />
+        {action?.type === 'Save' && (
+          <TouchableOpacity style={styles.changeStyle} onPress={onSave}>
+            <Text style={styles.actionStyle}>{action?.label}</Text>
+          </TouchableOpacity>
+        )}
+        {action?.type === 'More' && (
+          <TouchableOpacity style={styles.changeStyle} onPress={onMore}>
+            <Icon name="dots-horizontal" color={'#fff'} size={20} />
+          </TouchableOpacity>
         )}
         
       </View>
@@ -111,7 +126,7 @@ const Header: FC<HeaderType>=(props) => {
             underlineColorAndroid="transparent"
             placeholder={searchPlaceholder}
             placeholderTextColor={"#ccc"}
-          />          
+          />
         </View>
       )}
     </View>
@@ -123,6 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#b637ab',
     width:'100%',
     padding:10,
+    paddingTop: Platform.OS === 'ios' ? 40 : 10,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
@@ -145,19 +161,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingTop:20,
-    paddingBottom:10,
+    padding: 10,
   },
   backStyle: {
     width: 60,
     color: 'white',
     padding: 5,
   },
+  changeStyle: {
+
+  },
   backTextStyle: {
     color: 'white',
   },
   actionStyle: {
-    width: 30,
+    width: 60,
     color: 'white',
   },
   titleStyle: {

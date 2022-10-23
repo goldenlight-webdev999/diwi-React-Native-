@@ -1,37 +1,44 @@
 import React, { FC, useState, useEffect } from 'react';
+import { useSelector, useDispatch } from "react-redux";
 import {
-  Image,
-  SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Header from '../components/Header';
-import { friendSearchText, headerTitle, initItemsData, keySearchText, newToOldText, searchNoResult } from '../services/constants';
+import { friendSearchText, headerTitle, initFriendsData, initItemsData, keySearchText, newToOldText, searchNoResult } from '../services/constants';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { homeScreenDataType, ItemDataType, RootStackParamList, searchResultType } from '../services/models';
-
-import {itemsData} from '../services/mockup'
+import { HomeScreenDataType, ItemDataType, RootStackParamList, SearchResultType } from '../services/models';
+import { itemReducer } from "../helpers/redux/itemSlice";
+import {itemsData} from '../services/mockup';
+import CustomImage from '../components/CustomImage';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BottomSheetComponent from '../components/BottomSheetComponent';
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "Home">;
 
 const HomeScreen: FC<HomeScreenProps> = (props) => {
 
-  const params: homeScreenDataType = props.route.params
+  const params: HomeScreenDataType = props.route.params
 
   const from = (params && params.from) ? params.from : ''
+  const data = (params && params.data) ? params.data : []
 
-  console.log(from)
-
-  const items = itemsData
-  const [searchFriendData, setSearchFriendData] = useState(initItemsData);
+  const dispatch = useDispatch();
+  const items = (data && data.length > 0) ? data : itemsData
+  
+  //console.log("Home, items", items)
+  //console.log("from", from)
+  
+  const [searchFriendData, setSearchFriendData] = useState(initFriendsData);
   const [searchKeyData, setSearchKeyData] = useState(initItemsData);
   const [hasSearchData, setHasSearchData] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const onSearch = (result: searchResultType) => {
+  const onSearch = (result: SearchResultType) => {
     const {key, friendData, keyData} = result
     setSearchText(key)
     if (key !== '') {
@@ -47,24 +54,44 @@ const HomeScreen: FC<HomeScreenProps> = (props) => {
 
       setHasSearchData(true)
     } else {
-      setSearchFriendData(initItemsData)
+      setSearchFriendData(initFriendsData)
       setSearchKeyData(initItemsData)
       setHasSearchData(false)
     }
   }
 
+  const onGoDetail = (item: ItemDataType) => {
+    dispatch(
+      itemReducer({item: item})
+    );
+    props.navigation.navigate('Detail')
+  }
+
+  const onSearchResult = () => {
+    props.navigation.navigate('SearchResult', {searchKey: searchText, dataType: 'keyData', itemData: searchKeyData, friendData: []})
+  }
+
   useEffect(() => {
-    if (from === 'SearchResultScreen') {
+    if (from === 'SearchResult') {
       setSearchText('')
     }
   }, [from]);
 
   return (
-    <SafeAreaView >
-      <Header title={headerTitle} hasSearch={true} onSearch={onSearch} onBack={() => {}}></Header>
+    <View
+      style={styles.page}
+    >
+      <Header
+        title={headerTitle}
+        hasSearch={true}
+        onSearch={onSearch}
+        onBack={() => {}}
+        onSave={() => {}}
+        onMore={() => {}}
+      />
       <View style={styles.navContainer}>
         <Text style={styles.textStyle}>All looks, {newToOldText}</Text>
-        <Icon name="home" color={'#888'} size={20} />
+        <Icon name="arrow-down" color={'#888'} size={20} />
       </View>
       {hasSearchData ? (
         <View style={styles.searchResultsWrapper}>
@@ -76,9 +103,9 @@ const HomeScreen: FC<HomeScreenProps> = (props) => {
                     <View key={index}>
                       <TouchableOpacity
                         style={styles.friendItemWrapper}
-                        onPress={() => props.navigation.navigate('SearchResult', {searchKey: item.friend, dataType: 'friendData', data: searchFriendData})}
+                        onPress={onSearchResult}
                       >
-                        <Text style={styles.searchedTextStyle}>{item.friend}</Text>
+                        <Text style={styles.searchedTextStyle}>{item.name}</Text>
                         <Text style={styles.textStyle}>{friendSearchText}</Text>
                       </TouchableOpacity>
                     </View>
@@ -89,7 +116,7 @@ const HomeScreen: FC<HomeScreenProps> = (props) => {
                 <View style={styles.keyDataWrapper}>
                   <TouchableOpacity
                     style={styles.friendItemWrapper}
-                    onPress={() => props.navigation.navigate('SearchResult', {searchKey: searchText, dataType: 'keyData', data: searchKeyData})}
+                    onPress={onSearchResult}
                   >
                     <Text style={styles.searchedTextStyle}>{searchText}</Text>
                     <Text style={styles.textStyle}>{keySearchText}</Text>
@@ -106,18 +133,33 @@ const HomeScreen: FC<HomeScreenProps> = (props) => {
       ) : (
         <View style={styles.container}>        
           {items.map((item, index) => (
-            <TouchableOpacity style={styles.itemWrapper} onPress={() => props.navigation.navigate('Detail', item)} key={index}>
-              <Image style={styles.image} source={item.pic}></Image>
+            <TouchableOpacity
+              style={styles.itemWrapper}
+              onPress={() => onGoDetail(item)}
+              key={index}
+            >
+              <CustomImage
+                isImage={true}
+                type={item.pic.type}
+                src={item.pic.src}
+                size='thumbnail'
+              />
             </TouchableOpacity>
           ))}
         </View>
       )}
+      <BottomSheetComponent />
       
-    </SafeAreaView>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({  
+const styles = StyleSheet.create({
+  page: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+  },
   navContainer: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -133,6 +175,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'row',
     padding: 10,
+    zIndex: 1,
   },
   itemWrapper: {
     padding: 5,
@@ -177,11 +220,6 @@ const styles = StyleSheet.create({
   searchedTextStyle: {
     color: '#b637ab',
   },
-  image: {
-    width: 90,
-    height: 90,
-    resizeMode: 'cover',
-  }
 });
 
 export default HomeScreen;

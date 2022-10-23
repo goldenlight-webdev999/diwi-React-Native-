@@ -6,18 +6,27 @@ import {
   TextInput,
   View
 } from 'react-native';
+import Footer from '../components/BottomSheetComponent';
 import Header from '../components/Header';
-import { actionType } from '../services/models';
+import { ActionType } from '../services/models';
 
 
 const SettingsScreen: FC=(props) => {
-  const action: actionType = {
-    type: '1',
+  const action: ActionType = {
+    type: 'Save',
     label: 'Save'
   }
   return (
-    <SafeAreaView>
-      <Header title={"Account"} back={false} action={action} onSearch={() => {}} onBack={() => {}}></Header>
+    <View style={styles.page}>
+      <Header
+        title={"Account"}
+        back={false}
+        action={action}
+        onSearch={() => {}}
+        onBack={() => {}}
+        onSave={() => {}}
+        onMore={() => {}}
+      />
       <View style={styles.container}>
         <View style={styles.formStyle}>
           <Text>Email</Text>
@@ -59,12 +68,17 @@ const SettingsScreen: FC=(props) => {
         <View style={styles.pricingStyle}>
           <Text>Pricing Plans</Text>
         </View>
-      </View>      
-    </SafeAreaView>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  page: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+  },
   container: {
     display: 'flex',
     justifyContent: 'center',

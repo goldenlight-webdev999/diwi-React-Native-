@@ -1,20 +1,22 @@
 import React, { FC, useState, useEffect } from 'react';
 import {
-  Image,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { useSelector, useDispatch } from "react-redux";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Header from '../components/Header';
-import { friendSearchText, headerTitle, initItemsData, keySearchText, newToOldText, searchNoResult } from '../services/constants';
+import { friendSearchText, headerTitle, initFriendsData, initItemsData, keySearchText, newToOldText, searchNoResult } from '../services/constants';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ItemDataType, RootStackParamList, searchResultScreenDataType, searchResultType } from '../services/models';
+import { ItemDataType, RootStackParamList, searchResultScreenDataType, SearchResultType } from '../services/models';
+import { itemReducer } from "../helpers/redux/itemSlice";
 
 import {itemsData} from '../services/mockup'
+import CustomImage from '../components/CustomImage';
 
 type SearchResultScreenProps = NativeStackScreenProps<RootStackParamList, "SearchResult">;
 
@@ -23,15 +25,19 @@ const SearchResultScreen: FC<SearchResultScreenProps> = (props) => {
    * Input params
    */
   const params: searchResultScreenDataType = props.route.params
-  const { searchKey, dataType, data } = params
+  const { searchKey, dataType, itemData, friendData } = params
 
   console.log(params)
 
+  const dispatch = useDispatch();
+
+  const item = useSelector((state: any) => state.itemReducer.item)
+
   const initSearchText = searchKey;
-  const [searchFriendData, setSearchFriendData] = useState(initItemsData);
+  const [searchFriendData, setSearchFriendData] = useState(initFriendsData);
   const [searchKeyData, setSearchKeyData] = useState(initItemsData);
   const [searchText, setSearchText] = useState('');
-  const onSearch = (result: searchResultType) => {
+  const onSearch = (result: SearchResultType) => {
     
     const {key, friendData, keyData} = result
     setSearchText(key)
@@ -40,40 +46,80 @@ const SearchResultScreen: FC<SearchResultScreenProps> = (props) => {
       setSearchKeyData(keyData)
 
     } else {
-      props.navigation.navigate('Home', {from: 'SearchResultScreen'})
+      props.navigation.navigate('Home', {from: 'SearchResult', data:[]})
     }
+  }
+
+  const onDetail = (item: ItemDataType) => {
+    dispatch(
+      itemReducer({item: item})
+    );
+    props.navigation.navigate('Detail')
   }
 
   useEffect(() => {
   }, []);
 
   return (
-    <SafeAreaView >
-      <Header title={headerTitle} hasSearch={true} initSearchText={initSearchText} onSearch={onSearch} onBack={() => {}}></Header>
-      <View style={styles.navContainer}>
-        {dataType === 'friendData' ? (
-          <Text style={styles.textStyle}>{`Friend: ${searchKey}, `} {newToOldText}</Text>
-        ) : (
-          <Text style={styles.textStyle}>{`Matching ${searchKey}, `} {newToOldText}</Text>
-        )}
-
-        <Icon name="home" color={'#888'} size={20} />
-      </View>
-      <View style={styles.searchResultsWrapper}>
+    <View >
+      <Header
+        title={headerTitle}
+        hasSearch={true}
+        initSearchText={initSearchText}
+        onSearch={onSearch}
+        onBack={() => {}}
+        onSave={() => {}}
+        onMore={() => {}}
+      />
+      {dataType === 'friendData' ? (
         <View>
-          {data && data.length > 0 && (
-            <View style={styles.friendDataWrapper}>
-              {data.map((item, index) => (
-                <TouchableOpacity style={styles.itemWrapper} onPress={() => props.navigation.navigate('Detail', item)} key={index}>
-                  <Image style={styles.image} source={item.pic}></Image>
-                </TouchableOpacity>
-              ))}
+          <View style={styles.navContainer}>
+            <Text style={styles.textStyle}>{`Friend: ${searchKey}, `} {newToOldText}</Text>
+            <Icon name="arrow-down" color={'#888'} size={20} />
+          </View>
+          <View style={styles.searchResultsWrapper}>
+            <View>
+              {friendData && friendData.length > 0 && (
+                <View style={styles.friendDataWrapper}>
+                  {friendData.map((item, index) => (
+                    <Text key={index}>{item.name}</Text>
+                    // <TouchableOpacity style={styles.itemWrapper} onPress={() => props.navigation.navigate('Detail')} key={index}>
+                    //   <Image style={styles.image} source={item.pic}></Image>
+                    // </TouchableOpacity>
+                  ))}
+                </View>
+              )}
             </View>
-          )}
+          </View>
         </View>
-      </View>
+      ) : (
+        <View>
+          <View style={styles.navContainer}>
+            <Text style={styles.textStyle}>{`Matching ${searchKey}, `} {newToOldText}</Text>
+            <Icon name="arrow-down" color={'#888'} size={20} />
+          </View>
+          <View style={styles.searchResultsWrapper}>
+            <View>
+              {itemData && itemData.length > 0 && (
+                <View style={styles.friendDataWrapper}>
+                  {itemData.map((item, index) => (
+                    <TouchableOpacity style={styles.itemWrapper} onPress={() => onDetail(item)} key={index}>                      
+                      <CustomImage
+                        isImage={true}
+                        type={item.pic.type}
+                        src={item.pic.src}
+                        size='thumbnail'
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+      ) }
       
-    </SafeAreaView>
+    </View>
   );
 };
 
