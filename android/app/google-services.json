@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "513711014672",
+    "project_id": "diwi-fae32",
+    "storage_bucket": "diwi-fae32.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513711014672:android:7b559761e74ff969131b95",
+        "android_client_info": {
+          "package_name": "com.circleblox.diwi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "513711014672-5c2mfo19sblf4qbpuhahlkue600ufvsr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEa-EFfB4qbQMUAqwbkZTLN4PJmXtxeWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "513711014672-5c2mfo19sblf4qbpuhahlkue600ufvsr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "513711014672-v4mh78l3gverpgrr8no6qfbu06ba8qcc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ios.Diwi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
